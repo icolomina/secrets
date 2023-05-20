@@ -10,6 +10,7 @@ use Predis\Client;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -61,9 +62,10 @@ class IctSecretsExtension extends Extension
             throw new InvalidConfigurationException('Type redis require installing predis. Use "composer require snc/redis-bundle" to achieve it ');
         }
 
+        $container->setDefinition('ict_secrets.rds_client', new Definition(Client::class))->addArgument($redisConfig['uri']);
         $container
             ->register(RedisVaultStorage::class, RedisVaultStorage::class)
-            ->addArgument(new Client($redisConfig['uri']))
+            ->addArgument($container->getDefinition('ict_secrets.rds_client'))
             ->addArgument(new Reference(EncoderInterface::class))
         ;
 
