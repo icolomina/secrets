@@ -65,7 +65,7 @@ class IctSecretsExtension extends Extension
         $container->setDefinition('ict_secrets.rds_client', new Definition(Client::class))->addArgument($redisConfig['uri']);
         $container
             ->register(RedisVaultStorage::class, RedisVaultStorage::class)
-            ->addArgument($container->getDefinition('ict_secrets.rds_client'))
+            ->addArgument(new Reference('ict_secrets.rds_client'))
             ->addArgument(new Reference(EncoderInterface::class))
         ;
 
