@@ -35,7 +35,7 @@ class IctSecretsExtension extends Extension
             $this->loadSodiumEncoder($container);
         }
 
-        if($config['type'] == 'redis') {
+        if($config['store']['type'] == 'redis') {
             $this->loadRedisVault($container, $config);
         }
     }
