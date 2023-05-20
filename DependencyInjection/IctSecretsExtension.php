@@ -36,7 +36,7 @@ class IctSecretsExtension extends Extension
         }
 
         if($config['store']['type'] == 'redis') {
-            $this->loadRedisVault($container, $config);
+            $this->loadRedisVault($container, $config['store']);
         }
     }
 
@@ -50,9 +50,9 @@ class IctSecretsExtension extends Extension
         $container->setAlias(EncoderInterface::class, 'ict.secrets.keys_encoder');
     }
 
-    private function loadRedisVault(ContainerBuilder $container, array $config): void
+    private function loadRedisVault(ContainerBuilder $container, array $storeConfig): void
     {
-        $redisConfig = $config['config'];
+        $redisConfig = $storeConfig['config'];
         if(!isset($redisConfig['uri'])) {
             throw new InvalidConfigurationException('Redis configuration requires parameter uri into config key');
         }
