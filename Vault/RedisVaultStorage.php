@@ -11,20 +11,24 @@ class RedisVaultStorage implements VaultStorageInterface
 
     public function __construct(
         private readonly mixed $rdsVault,
-        private readonly EncoderInterface $keysEncoder
+        private readonly EncoderInterface $keysEncoder,
+        private readonly string $hashAlg
     ){ }
 
     public function storeKeys(string $name, bool $force = false): self
     {
-        if(!$force && ($this->rdsVault->exists("{$name}:dec") || $this->rdsVault->exists("{$name}:enc") ) ){
+        $hashedEncKeyName = hash($this->hashAlg,"{$name}:enc");
+        $hashedDecKeyName = hash($this->hashAlg,"{$name}:dec");
+
+        if(!$force && ($this->rdsVault->exists($hashedDecKeyName) || $this->rdsVault->exists($hashedEncKeyName )) ){
             return $this;
         }
 
-        $this->rdsVault->del(["{$name}:dec", "{$name}:enc"]);
+        $this->rdsVault->del([$hashedDecKeyName, $hashedEncKeyName]);
 
         $encryptionKeys = $this->keysEncoder->generateKeys();
-        $this->rdsVault->set("{$name}:dec", $encryptionKeys->decryptionKey);
-        $this->rdsVault->set("{$name}:enc", $encryptionKeys->encryptionKey);
+        $this->rdsVault->set($hashedDecKeyName, $encryptionKeys->decryptionKey);
+        $this->rdsVault->set($hashedEncKeyName, $encryptionKeys->encryptionKey);
 
         $this->encryptionKeys = $encryptionKeys;
         return $this;
@@ -32,7 +36,7 @@ class RedisVaultStorage implements VaultStorageInterface
 
     public function storeSecret(string $name, string $value): void
     {
-        $this->rdsVault->set($name, $this->keysEncoder->encode($value, $this->encryptionKeys));
+        $this->rdsVault->set(hash($this->hashAlg, $name), $this->keysEncoder->encode($value, $this->encryptionKeys));
     }
 
     public function storeSecrets(array $secrets): void
@@ -45,13 +49,13 @@ class RedisVaultStorage implements VaultStorageInterface
 
     public function getSecret(string $name): ?string
     {
-        return $this->keysEncoder->decode($this->rdsVault->get($name), $this->encryptionKeys);
+        return $this->keysEncoder->decode($this->rdsVault->get(hash($this->hashAlg, $name)), $this->encryptionKeys);
     }
 
     public function loadKeys(string $name): self
     {
-        $decryptionKey = $this->rdsVault->get("{$name}:dec");
-        $encryptionKey = $this->rdsVault->get("{$name}:enc");
+        $decryptionKey = $this->rdsVault->get(hash($this->hashAlg, "{$name}:dec"));
+        $encryptionKey = $this->rdsVault->get(hash($this->hashAlg, "{$name}:enc"));
 
         $this->encryptionKeys = new EncryptionKeys($decryptionKey, $encryptionKey);
         return $this;

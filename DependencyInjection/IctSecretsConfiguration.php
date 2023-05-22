@@ -14,6 +14,10 @@ class IctSecretsConfiguration implements ConfigurationInterface
         $tb
             ->getRootNode()
             ->children()
+                ->scalarNode('hash_alg')
+                    ->isRequired()
+                    ->defaultValue('sha512')
+                ->end()
                 ->arrayNode('store')
                     ->children()
                          ->enumNode('type')

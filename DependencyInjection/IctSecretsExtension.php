@@ -32,6 +32,8 @@ class IctSecretsExtension extends Extension
         $container->registerForAutoconfiguration(EncoderInterface::class)->addTag('ict.secrets.encoder');
         $container->registerForAutoconfiguration(VaultStorageInterface::class)->addTag('ict.secrets.vault');
 
+        $container->setParameter('ict.secrets.hash_alg', $config['hash_alg']);
+
         if($config['encoder'] == 'sodium' ) {
             $this->loadSodiumEncoder($container);
         }
@@ -67,6 +69,7 @@ class IctSecretsExtension extends Extension
             ->register(RedisVaultStorage::class, RedisVaultStorage::class)
             ->addArgument(new Reference('ict_secrets.rds_client'))
             ->addArgument(new Reference(EncoderInterface::class))
+            ->addArgument($container->getParameter('ict.secrets.hash_alg'))
         ;
 
         $container->setAlias(VaultStorageInterface::class, RedisVaultStorage::class);
