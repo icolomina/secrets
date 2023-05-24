@@ -9,4 +9,8 @@ interface VaultStorageInterface
     public function storeSecrets(array $secrets): void;
     public function getSecret(string $name): ?string;
     public function loadKeys(string $name): self;
+
+    public function removeSecret(string $name): void;
+
+    public function removeKeys(string $name): void;
 }

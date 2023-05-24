@@ -60,4 +60,17 @@ class RedisVaultStorage implements VaultStorageInterface
         $this->encryptionKeys = new EncryptionKeys($decryptionKey, $encryptionKey);
         return $this;
     }
+
+    public function removeSecret(string $name): void
+    {
+        $this->rdsVault->del([hash($this->hashAlg, $name)]);
+    }
+
+    public function removeKeys(string $name): void
+    {
+        $hashedEncKeyName = hash($this->hashAlg,"{$name}:enc");
+        $hashedDecKeyName = hash($this->hashAlg,"{$name}:dec");
+
+        $this->rdsVault->del([$hashedEncKeyName, $hashedDecKeyName]);
+    }
 }
