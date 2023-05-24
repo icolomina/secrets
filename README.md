@@ -47,7 +47,7 @@ public function __construct(
 ```php
 $this->vaultStorage->storeKeys('your_encription_keys_name')->storeSecret('your_secret_name', 'your_secret_value');
 ```
-_your_encription_keys_name_ is used to store the encription keys by which your secrets wull be encripted
+_your_encription_keys_name_ is used to store the encription keys by which your secrets will be encripted
 
 ### Retrieve a key
 
