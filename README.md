@@ -42,15 +42,21 @@ public function __construct(
 )
 ```
 
-#### Store a key
+#### Store a secret
 
 ```php
 $this->vaultStorage->storeKeys('your_encription_keys_name')->storeSecret('your_secret_name', 'your_secret_value');
 ```
 _your_encription_keys_name_ is used to store the encription keys by which your secrets will be encripted
 
-### Retrieve a key
+### Retrieve a secret
 
 ```php
 $secretVal = $this->vaultStorage->getSecret($secretKey)
+```
+
+### Remove a secret
+
+```php
+$secretVal = $this->vaultStorage->removeSecret($secretKey)
 ```
