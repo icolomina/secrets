@@ -8,7 +8,7 @@ This bundle allows developers to encrypt its keys ans store them using redis as 
 Install it using composer:
 
 ```shell
-composer2 require ict/secrets:dev-main
+composer require ict/secrets:dev-main
 ```
 
 ### Configuration
